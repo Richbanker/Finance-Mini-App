@@ -1,5 +1,5 @@
 {
-  "name": "finance-miniapp",
+  "name": "finance-miniapp-richbanker",
   "version": "1.0.0",
   "description": "Modern Telegram Mini App for personal finance tracking with beautiful UI and real-time analytics",
   "type": "module",

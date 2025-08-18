@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "finance-miniapp",
+  "name": "finance-miniapp-richbanker",
   "builds": [
     {
       "src": "package.json",
