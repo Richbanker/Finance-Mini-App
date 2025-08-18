@@ -8,32 +8,36 @@ interface FinanceState {
   categories: Category[]
   budgets: Budget[]
   settings: Settings
-  
+
   // Filter state
   activeFilters: FilterOptions
-  
+
   // Actions
   addTransaction: (tx: Omit<Transaction, 'id' | 'createdAt'>) => void
   removeTransaction: (id: string) => void
   updateTransaction: (id: string, updates: Partial<Transaction>) => void
-  
+
   addCategory: (category: Omit<Category, 'id'>) => void
   removeCategory: (id: string) => void
-  
+
   setCurrency: (currency: 'RUB' | 'USD' | 'EUR') => void
-  
+
   // Filter actions
   setFilters: (filters: FilterOptions) => void
   clearFilters: () => void
   setTypeFilter: (type: TxType | '') => void
   setCategoryFilter: (categoryId: string) => void
   setPeriodFilter: (period?: { from: string; to: string }) => void
-  
+
   // Computed
   filtered: (options?: FilterOptions) => Transaction[]
   filteredTransactions: () => Transaction[]
-  totals: (period?: { from: string; to: string }) => { income: number; expense: number; balance: number }
-  
+  totals: (period?: { from: string; to: string }) => {
+    income: number
+    expense: number
+    balance: number
+  }
+
   // Seed data for dev
   seedData: () => void
   updateCategories: () => void
@@ -45,19 +49,31 @@ const defaultCategories: Category[] = [
   { id: 'food', name: 'Еда', type: 'expense', icon: 'utensils-crossed', color: '#f97316' },
   { id: 'transport', name: 'Транспорт', type: 'expense', icon: 'car', color: '#3b82f6' },
   { id: 'shopping', name: 'Покупки', type: 'expense', icon: 'shopping-bag', color: '#ec4899' },
-  { id: 'entertainment', name: 'Развлечения', type: 'expense', icon: 'gamepad-2', color: '#8b5cf6' },
+  {
+    id: 'entertainment',
+    name: 'Развлечения',
+    type: 'expense',
+    icon: 'gamepad-2',
+    color: '#8b5cf6',
+  },
   { id: 'health', name: 'Здоровье', type: 'expense', icon: 'pill', color: '#ef4444' },
   { id: 'utilities', name: 'ЖКХ', type: 'expense', icon: 'home', color: '#06b6d4' },
   { id: 'finance', name: 'Финансы', type: 'expense', icon: 'credit-card', color: '#8b5cf6' },
   { id: 'travel', name: 'Путешествия', type: 'expense', icon: 'plane', color: '#06b6d4' },
-  { id: 'education', name: 'Образование', type: 'expense', icon: 'graduation-cap', color: '#3b82f6' },
+  {
+    id: 'education',
+    name: 'Образование',
+    type: 'expense',
+    icon: 'graduation-cap',
+    color: '#3b82f6',
+  },
   { id: 'family', name: 'Семья', type: 'expense', icon: 'heart', color: '#ec4899' },
   { id: 'coffee', name: 'Кафе', type: 'expense', icon: 'coffee', color: '#a855f7' },
   { id: 'clothing', name: 'Одежда', type: 'expense', icon: 'shirt', color: '#f59e0b' },
   { id: 'fuel', name: 'Топливо', type: 'expense', icon: 'fuel', color: '#ef4444' },
   { id: 'other-expense', name: 'Прочее', type: 'expense', icon: 'package', color: '#6b7280' },
-  
-  // Income categories  
+
+  // Income categories
   { id: 'salary', name: 'Зарплата', type: 'income', icon: 'banknote', color: '#10b981' },
   { id: 'bonus', name: 'Бонус', type: 'income', icon: 'gift', color: '#f59e0b' },
   { id: 'investment', name: 'Инвестиции', type: 'income', icon: 'trending-up', color: '#22c55e' },
@@ -95,9 +111,7 @@ export const useFinanceStore = create<FinanceState>()(
 
       updateTransaction: (id, updates) => {
         set((state) => ({
-          transactions: state.transactions.map((tx) =>
-            tx.id === id ? { ...tx, ...updates } : tx
-          ),
+          transactions: state.transactions.map((tx) => (tx.id === id ? { ...tx, ...updates } : tx)),
         }))
       },
 
@@ -113,9 +127,9 @@ export const useFinanceStore = create<FinanceState>()(
 
       removeCategory: (id) => {
         // Don't remove default categories
-        const defaultIds = defaultCategories.map(c => c.id)
+        const defaultIds = defaultCategories.map((c) => c.id)
         if (defaultIds.includes(id)) return
-        
+
         set((state) => ({
           categories: state.categories.filter((cat) => cat.id !== id),
         }))
@@ -141,8 +155,8 @@ export const useFinanceStore = create<FinanceState>()(
           activeFilters: {
             ...state.activeFilters,
             type: type || undefined,
-            categoryId: undefined // Reset category when changing type
-          }
+            categoryId: undefined, // Reset category when changing type
+          },
         }))
       },
 
@@ -150,8 +164,8 @@ export const useFinanceStore = create<FinanceState>()(
         set((state) => ({
           activeFilters: {
             ...state.activeFilters,
-            categoryId: categoryId || undefined
-          }
+            categoryId: categoryId || undefined,
+          },
         }))
       },
 
@@ -159,8 +173,8 @@ export const useFinanceStore = create<FinanceState>()(
         set((state) => ({
           activeFilters: {
             ...state.activeFilters,
-            period
-          }
+            period,
+          },
         }))
       },
 
@@ -223,7 +237,7 @@ export const useFinanceStore = create<FinanceState>()(
       seedData: () => {
         // Force update categories with colors
         set({ categories: defaultCategories })
-        
+
         // Only seed if no transactions exist
         if (get().transactions.length > 0) return
 

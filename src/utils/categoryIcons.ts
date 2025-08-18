@@ -2,11 +2,11 @@
  * Константы и утилиты для иконок категорий
  */
 
-export type CategoryIconType = 'expense' | 'income';
+export type CategoryIconType = 'expense' | 'income'
 
 export interface IconOption {
-  name: string;
-  label: string;
+  name: string
+  label: string
 }
 
 /**
@@ -20,9 +20,9 @@ export const getAvailableIcons = (type: CategoryIconType): IconOption[] => {
       { name: 'trending-up', label: 'Инвестиции' },
       { name: 'laptop', label: 'Фриланс' },
       { name: 'dollar-sign', label: 'Доход' },
-    ];
+    ]
   }
-  
+
   return [
     { name: 'shopping-cart', label: 'Покупки' },
     { name: 'utensils', label: 'Еда' },
@@ -34,5 +34,5 @@ export const getAvailableIcons = (type: CategoryIconType): IconOption[] => {
     { name: 'book', label: 'Образование' },
     { name: 'plane', label: 'Путешествия' },
     { name: 'package', label: 'Прочее' },
-  ];
-};
+  ]
+}

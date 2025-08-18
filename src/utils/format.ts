@@ -11,11 +11,11 @@ export function formatCurrency(amount: number, currency: 'RUB' | 'USD' | 'EUR' =
   })
 
   const symbol = currencySymbols[currency]
-  
+
   if (currency === 'USD' || currency === 'EUR') {
     return `${symbol}${formatted}`
   }
-  
+
   return `${formatted} ${symbol}`
 }
 
@@ -64,20 +64,20 @@ export function getDateRangeLabel(from?: string, to?: string): string {
 export function getMonthStartEnd(date: Date = new Date()): { start: string; end: string } {
   const year = date.getFullYear()
   const month = date.getMonth()
-  
+
   const start = new Date(year, month, 1).toISOString().split('T')[0]
   const end = new Date(year, month + 1, 0).toISOString().split('T')[0]
-  
+
   return { start, end }
 }
 
 export function getWeekStartEnd(date: Date = new Date()): { start: string; end: string } {
   const day = date.getDay()
   const diff = date.getDate() - day + (day === 0 ? -6 : 1) // Adjust for Monday start
-  
+
   const start = new Date(date.setDate(diff))
   const end = new Date(date.setDate(diff + 6))
-  
+
   return {
     start: start.toISOString().split('T')[0],
     end: end.toISOString().split('T')[0],

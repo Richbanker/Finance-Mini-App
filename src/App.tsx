@@ -16,12 +16,10 @@ function App() {
   useEffect(() => {
     // Initialize Telegram WebApp
     console.log('Telegram WebApp initialized:', telegramAPI.isReady)
-    
+
     // Пользователи начинают с чистого листа - без тестовых данных
     // seedData() больше не вызывается автоматически
   }, [])
-
-
 
   const handleExport = () => {
     if (transactions.length === 0) {
@@ -42,12 +40,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-tg mobile-scroll">
-      <Header
-        onAddTransaction={() => setIsAddSheetOpen(true)}
-        onExport={handleExport}
-      />
+      <Header onAddTransaction={() => setIsAddSheetOpen(true)} onExport={handleExport} />
 
-      
       <main className="pb-6 sm:pb-8 safe-bottom mobile-py-4">
         <SummaryCards />
         <Filters />
@@ -55,10 +49,7 @@ function App() {
         <TransactionList />
       </main>
 
-      <AddTransactionSheet
-        isOpen={isAddSheetOpen}
-        onClose={() => setIsAddSheetOpen(false)}
-      />
+      <AddTransactionSheet isOpen={isAddSheetOpen} onClose={() => setIsAddSheetOpen(false)} />
     </div>
   )
 }

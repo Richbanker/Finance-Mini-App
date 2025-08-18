@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ArrowUpCircle, ArrowDownCircle, CreditCard, Calendar, FileText, AlertCircle } from 'lucide-react'
+import {
+  X,
+  ArrowUpCircle,
+  ArrowDownCircle,
+  CreditCard,
+  Calendar,
+  FileText,
+  AlertCircle,
+} from 'lucide-react'
 import { useFinanceStore } from '../store/useFinanceStore'
 import { parseAmount } from '../utils/format'
 import { CategoryIcon } from './CategoryIcon'
@@ -13,12 +21,9 @@ interface AddTransactionSheetProps {
   onClose: () => void
 }
 
-export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
-  isOpen,
-  onClose,
-}) => {
+export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({ isOpen, onClose }) => {
   const { addTransaction, categories } = useFinanceStore()
-  
+
   const [type, setType] = useState<TxType>('expense')
   const [amount, setAmount] = useState('')
   const [categoryId, setCategoryId] = useState('')
@@ -32,7 +37,10 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
   // Set default category when type changes or form opens
   useEffect(() => {
     const defaultCategory = filteredCategories[0]
-    if (defaultCategory && (!categoryId || !filteredCategories.some(cat => cat.id === categoryId))) {
+    if (
+      defaultCategory &&
+      (!categoryId || !filteredCategories.some((cat) => cat.id === categoryId))
+    ) {
       setCategoryId(defaultCategory.id)
     }
   }, [type, filteredCategories, categoryId])
@@ -49,7 +57,7 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
 
   const handleSubmit = () => {
     const newErrors: { amount?: string } = {}
-    
+
     // Validate amount
     const parsedAmount = parseAmount(amount)
     if (parsedAmount <= 0) {
@@ -96,28 +104,28 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
   const overlayVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 },
-    exit: { opacity: 0 }
+    exit: { opacity: 0 },
   }
 
   const sheetVariants = {
     hidden: { y: '100%', opacity: 0 },
-    visible: { 
-      y: 0, 
+    visible: {
+      y: 0,
       opacity: 1,
       transition: {
         type: 'spring' as const,
         damping: 30,
-        stiffness: 300
-      }
+        stiffness: 300,
+      },
     },
-    exit: { 
-      y: '100%', 
+    exit: {
+      y: '100%',
       opacity: 0,
       transition: {
         duration: 0.3,
-        ease: 'easeInOut' as const
-      }
-    }
+        ease: 'easeInOut' as const,
+      },
+    },
   }
 
   const contentVariants = {
@@ -127,14 +135,14 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
       y: 0,
       transition: {
         delay: 0.1,
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   }
 
   const itemVariants = {
     hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 }
+    visible: { opacity: 1, y: 0 },
   }
 
   return (
@@ -142,7 +150,7 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
       {isOpen && (
         <>
           {/* Overlay */}
-          <motion.div 
+          <motion.div
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
             variants={overlayVariants}
             initial="hidden"
@@ -150,9 +158,9 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
             exit="exit"
             onClick={handleClose}
           />
-          
+
           {/* Sheet */}
-          <motion.div 
+          <motion.div
             className="fixed bottom-0 left-0 right-0 z-50"
             variants={sheetVariants}
             initial="hidden"
@@ -160,20 +168,20 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
             exit="exit"
           >
             <SheetCard className="rounded-t-4xl rounded-b-none max-h-[90vh] overflow-hidden">
-              <motion.div 
+              <motion.div
                 className="overflow-y-auto"
                 variants={contentVariants}
                 initial="hidden"
                 animate="visible"
               >
                 {/* Handle bar */}
-                <motion.div 
+                <motion.div
                   className="w-16 h-1.5 bg-tg-hint/30 rounded-full mx-auto mb-8"
                   variants={itemVariants}
                 />
-                
+
                 {/* Header */}
-                <motion.div 
+                <motion.div
                   className="flex items-center justify-between mb-8"
                   variants={itemVariants}
                 >
@@ -203,7 +211,7 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
                       onClick={() => handleTypeChange('expense')}
                       className={`p-4 rounded-2xl min-h-touch flex items-center justify-center space-x-3 transition-all duration-300 ${
                         type === 'expense'
-                          ? 'bg-gradient-to-br from-danger-400 to-danger-600 text-white shadow-lg shadow-danger-400/25' 
+                          ? 'bg-gradient-to-br from-danger-400 to-danger-600 text-white shadow-lg shadow-danger-400/25'
                           : 'glass hover:bg-white/15'
                       }`}
                       whileHover={{ scale: 1.02 }}
@@ -245,8 +253,10 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
                       placeholder="0"
                       className={`w-full p-6 text-4xl font-bold text-center glass rounded-2xl border-2 transition-all duration-300 
                                   placeholder:text-tg-hint/40 focus:border-primary-400 focus:shadow-glow ${
-                        errors.amount ? 'border-danger-400 focus:border-danger-400' : 'border-transparent'
-                      }`}
+                                    errors.amount
+                                      ? 'border-danger-400 focus:border-danger-400'
+                                      : 'border-transparent'
+                                  }`}
                       autoFocus
                     />
                     <div className="absolute right-6 top-1/2 transform -translate-y-1/2 text-tg-hint text-2xl font-medium">
@@ -289,11 +299,11 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                          categoryId === category.id
-                            ? 'bg-primary-400/20'
-                            : 'bg-white/10'
-                        }`}>
+                        <div
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                            categoryId === category.id ? 'bg-primary-400/20' : 'bg-white/10'
+                          }`}
+                        >
                           <CategoryIcon icon={category.icon} size={20} color={category.color} />
                         </div>
                         <span className="font-medium text-sm text-tg-text">{category.name}</span>
@@ -315,7 +325,10 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
                       className="w-full p-4 glass rounded-2xl border-2 border-transparent focus:border-primary-400 
                                focus:shadow-glow transition-all duration-300 text-tg-text"
                     />
-                    <Calendar size={20} className="absolute right-4 top-1/2 transform -translate-y-1/2 text-tg-hint pointer-events-none" />
+                    <Calendar
+                      size={20}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-tg-hint pointer-events-none"
+                    />
                   </div>
                 </motion.div>
 
@@ -334,7 +347,10 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
                                focus:shadow-glow transition-all duration-300 resize-none text-tg-text 
                                placeholder:text-tg-hint/40"
                     />
-                    <FileText size={20} className="absolute right-4 top-4 text-tg-hint pointer-events-none" />
+                    <FileText
+                      size={20}
+                      className="absolute right-4 top-4 text-tg-hint pointer-events-none"
+                    />
                   </div>
                 </motion.div>
 

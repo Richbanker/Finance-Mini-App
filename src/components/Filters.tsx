@@ -9,16 +9,16 @@ import telegramAPI from '../telegram/telegram'
 import type { TxType } from '../types'
 
 export const Filters: React.FC = () => {
-  const { 
-    categories, 
-    activeFilters, 
+  const {
+    categories,
+    activeFilters,
     filteredTransactions,
-    setTypeFilter, 
-    setCategoryFilter, 
-    setPeriodFilter, 
-    clearFilters 
+    setTypeFilter,
+    setCategoryFilter,
+    setPeriodFilter,
+    clearFilters,
   } = useFinanceStore()
-  
+
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const transactions = filteredTransactions()
@@ -26,7 +26,7 @@ export const Filters: React.FC = () => {
   // Sync local state with global filters
   useEffect(() => {
     if (activeFilters.period?.from !== dateFrom || activeFilters.period?.to !== dateTo) {
-      setPeriodFilter((dateFrom || dateTo) ? { from: dateFrom, to: dateTo } : undefined)
+      setPeriodFilter(dateFrom || dateTo ? { from: dateFrom, to: dateTo } : undefined)
     }
   }, [dateFrom, dateTo, setPeriodFilter, activeFilters.period])
 
@@ -56,24 +56,24 @@ export const Filters: React.FC = () => {
       y: 0,
       transition: {
         duration: 0.5,
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   }
 
   const itemVariants = {
     hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 }
+    visible: { opacity: 1, y: 0 },
   }
 
   const chipVariants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.8 }
+    exit: { opacity: 0, scale: 0.8 },
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="px-4 sm:px-6 py-3 sm:py-4 mobile-px-4 small-mobile-px-3"
       variants={containerVariants}
       initial="hidden"
@@ -81,17 +81,16 @@ export const Filters: React.FC = () => {
     >
       <Card className="relative overflow-hidden">
         {/* Header */}
-        <motion.div 
-          className="flex items-center justify-between mb-6"
-          variants={itemVariants}
-        >
+        <motion.div className="flex items-center justify-between mb-6" variants={itemVariants}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-lg">
               <Filter size={20} className="text-white" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-tg-text">Фильтры</h3>
-              <p className="text-xs text-tg-hint/70 uppercase tracking-wide">Настройте отображение</p>
+              <p className="text-xs text-tg-hint/70 uppercase tracking-wide">
+                Настройте отображение
+              </p>
             </div>
           </div>
           <AnimatePresence>
@@ -134,7 +133,7 @@ export const Filters: React.FC = () => {
               <span className="font-medium">Все</span>
               {!activeFilters.type && <Check size={16} />}
             </motion.button>
-            
+
             <motion.button
               onClick={() => handleTypeChange('income')}
               className={`flex items-center gap-2 px-4 py-3 rounded-2xl transition-all duration-300 min-h-touch ${
@@ -149,7 +148,7 @@ export const Filters: React.FC = () => {
               <span className="font-medium">Доходы</span>
               {activeFilters.type === 'income' && <Check size={16} />}
             </motion.button>
-            
+
             <motion.button
               onClick={() => handleTypeChange('expense')}
               className={`flex items-center gap-2 px-4 py-3 rounded-2xl transition-all duration-300 min-h-touch ${
@@ -186,9 +185,9 @@ export const Filters: React.FC = () => {
               <span className="text-sm font-medium">Все</span>
               {!activeFilters.categoryId && <Check size={14} />}
             </motion.button>
-            
+
             {categories
-              .filter(cat => !activeFilters.type || cat.type === activeFilters.type)
+              .filter((cat) => !activeFilters.type || cat.type === activeFilters.type)
               .map((category) => (
                 <motion.button
                   key={category.id}
@@ -201,9 +200,11 @@ export const Filters: React.FC = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${
-                    activeFilters.categoryId === category.id ? 'bg-primary-400/20' : 'bg-white/10'
-                  }`}>
+                  <div
+                    className={`w-6 h-6 rounded-lg flex items-center justify-center ${
+                      activeFilters.categoryId === category.id ? 'bg-primary-400/20' : 'bg-white/10'
+                    }`}
+                  >
                     <CategoryIcon icon={category.icon} size={14} color={category.color} />
                   </div>
                   <span className="text-sm font-medium">{category.name}</span>
@@ -231,7 +232,10 @@ export const Filters: React.FC = () => {
                          focus:shadow-glow transition-all duration-300 text-tg-text text-sm"
                 placeholder="С даты"
               />
-              <Calendar size={18} className="absolute right-4 top-1/2 transform -translate-y-1/2 text-tg-hint pointer-events-none" />
+              <Calendar
+                size={18}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-tg-hint pointer-events-none"
+              />
             </div>
             <div className="relative">
               <input
@@ -245,18 +249,21 @@ export const Filters: React.FC = () => {
                          focus:shadow-glow transition-all duration-300 text-tg-text text-sm"
                 placeholder="По дату"
               />
-              <Calendar size={18} className="absolute right-4 top-1/2 transform -translate-y-1/2 text-tg-hint pointer-events-none" />
+              <Calendar
+                size={18}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-tg-hint pointer-events-none"
+              />
             </div>
           </div>
         </motion.div>
 
         {/* Results */}
-        <motion.div 
+        <motion.div
           className="flex items-center justify-between p-4 rounded-2xl glass-gradient border border-primary-400/20"
           variants={itemVariants}
         >
           <div className="flex items-center gap-3">
-            <motion.div 
+            <motion.div
               className="w-10 h-10 rounded-xl bg-gradient-to-br from-success-400 to-primary-500 flex items-center justify-center shadow-lg"
               animate={{ scale: [1, 1.1, 1] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
@@ -267,9 +274,7 @@ export const Filters: React.FC = () => {
               <div className="text-sm font-semibold text-tg-text">
                 {hasFilters ? 'Найдено операций' : 'Всего операций'}
               </div>
-              <div className="text-2xl font-bold text-primary-400">
-                {transactions.length}
-              </div>
+              <div className="text-2xl font-bold text-primary-400">{transactions.length}</div>
               {hasFilters && activeFilters.period && (
                 <div className="text-xs text-tg-hint/70 mt-1">
                   {getDateRangeLabel(activeFilters.period.from, activeFilters.period.to)}

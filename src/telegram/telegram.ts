@@ -132,13 +132,22 @@ class TelegramAPI {
       document.documentElement.style.setProperty('--tg-theme-link-color', themeParams.link_color)
     }
     if (themeParams.button_color) {
-      document.documentElement.style.setProperty('--tg-theme-button-color', themeParams.button_color)
+      document.documentElement.style.setProperty(
+        '--tg-theme-button-color',
+        themeParams.button_color
+      )
     }
     if (themeParams.button_text_color) {
-      document.documentElement.style.setProperty('--tg-theme-button-text-color', themeParams.button_text_color)
+      document.documentElement.style.setProperty(
+        '--tg-theme-button-text-color',
+        themeParams.button_text_color
+      )
     }
     if (themeParams.secondary_bg_color) {
-      document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', themeParams.secondary_bg_color)
+      document.documentElement.style.setProperty(
+        '--tg-theme-secondary-bg-color',
+        themeParams.secondary_bg_color
+      )
     }
 
     // Обновляем сплэш-экран в реальном времени, если он еще виден

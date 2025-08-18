@@ -1,5 +1,5 @@
 import React from 'react'
-import { 
+import {
   UtensilsCrossed,
   Car,
   ShoppingBag,
@@ -20,33 +20,33 @@ import {
   Music,
   Shirt,
   Fuel,
-  type LucideIcon
+  type LucideIcon,
 } from 'lucide-react'
 
 // Маппинг имён иконок на компоненты Lucide
 const iconMap: Record<string, LucideIcon> = {
   // Expense icons
   'utensils-crossed': UtensilsCrossed,
-  'car': Car,
+  car: Car,
   'shopping-bag': ShoppingBag,
   'gamepad-2': Gamepad2,
-  'pill': Pill,
-  'home': Home,
-  'package': Package,
+  pill: Pill,
+  home: Home,
+  package: Package,
   'credit-card': CreditCard,
-  'plane': Plane,
+  plane: Plane,
   'graduation-cap': GraduationCap,
-  'heart': Heart,
-  'coffee': Coffee,
-  'music': Music,
-  'shirt': Shirt,
-  'fuel': Fuel,
-  
+  heart: Heart,
+  coffee: Coffee,
+  music: Music,
+  shirt: Shirt,
+  fuel: Fuel,
+
   // Income icons
-  'banknote': Banknote,
-  'gift': Gift,
+  banknote: Banknote,
+  gift: Gift,
   'trending-up': TrendingUp,
-  'laptop': Laptop,
+  laptop: Laptop,
   'dollar-sign': DollarSign,
 }
 
@@ -57,20 +57,13 @@ interface CategoryIconProps {
   color?: string
 }
 
-export const CategoryIcon: React.FC<CategoryIconProps> = ({ 
-  icon, 
-  size = 24, 
+export const CategoryIcon: React.FC<CategoryIconProps> = ({
+  icon,
+  size = 24,
   className = '',
-  color 
+  color,
 }) => {
   const IconComponent = iconMap[icon] || Package
-  
-  return (
-    <IconComponent 
-      size={size} 
-      className={className}
-      style={{ color }}
-    />
-  )
-}
 
+  return <IconComponent size={size} className={className} style={{ color }} />
+}
