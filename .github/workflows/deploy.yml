@@ -11,18 +11,14 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
     
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup Node.js ${{ matrix.node-version }}
+    - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: '20'
         cache: 'npm'
         
     - name: Install dependencies
@@ -41,15 +37,12 @@ jobs:
       run: npm run build
       env:
         VITE_APP_VERSION: ${{ github.sha }}
-        
-    - name: Test build
-      run: npm run preview &
-      
-  deploy-preview:
-    name: Deploy Preview
+
+  deploy:
+    name: Deploy to Vercel
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
     needs: build-and-test
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     
     steps:
     - name: Checkout code
@@ -64,47 +57,18 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
-    - name: Build for preview
-      run: npm run build
-      env:
-        VITE_APP_VERSION: ${{ github.sha }}
-        
-    - name: Deploy to Vercel (Preview)
-      uses: vercel/action@v1
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        
-  deploy-production:
-    name: Deploy Production
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    needs: build-and-test
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Install Vercel CLI
+      run: npm install --global vercel@latest
       
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Build for production
-      run: npm run build
+    - name: Deploy to Vercel
+      run: |
+        if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/master" ]]; then
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
+        else
+          vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
+        fi
       env:
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         VITE_APP_VERSION: ${{ github.sha }}
         VITE_APP_URL: ${{ secrets.PRODUCTION_URL }}
-        
-    - name: Deploy to Vercel (Production)
-      uses: vercel/action@v1
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        vercel-args: '--prod'
