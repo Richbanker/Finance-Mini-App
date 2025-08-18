@@ -12,7 +12,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
-  Legend,
+
 } from 'recharts'
 import { useFinanceStore } from '../store/useFinanceStore'
 import { formatCurrency, formatDateShort } from '../utils/format'
@@ -56,8 +56,7 @@ export const Charts: React.FC = () => {
     .sort((a, b) => b.value - a.value)
     .slice(0, 8) // Show top 8 categories
 
-  // Extract colors array for Recharts
-  const colors = pieData.map(item => item.color)
+  // Note: colors are handled individually in the Cell components below
 
   // Prepare data for LineChart (daily balance)
   const dailyData = allTransactions.reduce((acc, tx) => {
@@ -83,7 +82,11 @@ export const Charts: React.FC = () => {
       balance: Math.round(income - expense),
     }))
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: { 
+    active?: boolean; 
+    payload?: Array<{ name: string; value: number; color: string }>; 
+    label?: string 
+  }) => {
     if (active && payload && payload.length) {
       return (
         <motion.div 
@@ -93,7 +96,7 @@ export const Charts: React.FC = () => {
           transition={{ duration: 0.2 }}
         >
           <p className="font-semibold text-tg-text mb-2">{label}</p>
-          {payload.map((entry: any, index: number) => (
+          {payload.map((entry, index: number) => (
             <div key={index} className="flex items-center justify-between gap-3 text-sm">
               <div 
                 className="w-3 h-3 rounded-full" 
@@ -114,7 +117,10 @@ export const Charts: React.FC = () => {
     return null
   }
 
-  const PieTooltip = ({ active, payload }: any) => {
+  const PieTooltip = ({ active, payload }: { 
+    active?: boolean; 
+    payload?: Array<{ payload: { name: string; value: number; color: string; icon: string } }> 
+  }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
@@ -128,13 +134,13 @@ export const Charts: React.FC = () => {
             <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
               <CategoryIcon icon={data.icon} size={16} color={data.color} />
             </div>
-            <span className="font-semibold text-tg-text">{payload[0].name}</span>
+            <span className="font-semibold text-tg-text">{data.name}</span>
           </div>
           <div className="text-xl font-bold" style={{ color: data.color }}>
-            {formatCurrency(payload[0].value, currency)}
+            {formatCurrency(data.value, currency)}
           </div>
           <div className="text-xs text-tg-hint mt-1">
-            {((payload[0].value / pieData.reduce((sum, item) => sum + item.value, 0)) * 100).toFixed(1)}%
+            {((data.value / pieData.reduce((sum, item) => sum + item.value, 0)) * 100).toFixed(1)}%
           </div>
         </motion.div>
       )

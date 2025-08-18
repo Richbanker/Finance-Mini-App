@@ -22,7 +22,7 @@ function markReadyAndHide(): void {
   window.setTimeout(() => {
     // Уведомляем Telegram, что можно показывать контент
     try { 
-      (window as any).Telegram?.WebApp?.ready?.(); 
+      (window as typeof window & { Telegram?: { WebApp?: { ready?: () => void } } }).Telegram?.WebApp?.ready?.(); 
     } catch (error) {
       console.debug('Telegram WebApp not available:', error);
     }
