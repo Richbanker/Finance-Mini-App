@@ -316,6 +316,8 @@ export const useFinanceStore = create<FinanceState>()(
         set({ transactions: seedTransactions })
       },
 
+
+
       updateCategories: () => {
         set({ categories: defaultCategories })
       },

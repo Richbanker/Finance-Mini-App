@@ -171,19 +171,21 @@ export const Filters: React.FC = () => {
           <label className="block text-sm text-tg-hint font-medium mb-3 uppercase tracking-wide">
             Категория
           </label>
-          <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+          <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2">
             <motion.button
               onClick={() => handleCategoryChange('')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 ${
+              className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-300 min-h-[60px] ${
                 !activeFilters.categoryId
-                  ? 'bg-gradient-to-br from-primary-400 to-primary-600 text-white shadow-lg'
-                  : 'glass hover:bg-white/15 text-tg-text'
+                  ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg'
+                  : 'bg-white/10 hover:bg-white/15 text-[var(--tg-theme-text-color)]'
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <span className="text-sm font-medium">Все</span>
-              {!activeFilters.categoryId && <Check size={14} />}
+              <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-white/20">
+                <Check size={14} />
+              </div>
+              <span className="text-xs font-medium text-center">Все</span>
             </motion.button>
 
             {categories
@@ -192,23 +194,22 @@ export const Filters: React.FC = () => {
                 <motion.button
                   key={category.id}
                   onClick={() => handleCategoryChange(category.id)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 ${
+                  className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-300 min-h-[60px] ${
                     activeFilters.categoryId === category.id
-                      ? 'glass-gradient border-2 border-primary-400/50 shadow-glow text-tg-text'
-                      : 'glass hover:bg-white/15 text-tg-text'
+                      ? 'bg-white/20 border-2 border-blue-400/50 shadow-lg text-[var(--tg-theme-text-color)]'
+                      : 'bg-white/10 hover:bg-white/15 text-[var(--tg-theme-text-color)]'
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <div
                     className={`w-6 h-6 rounded-lg flex items-center justify-center ${
-                      activeFilters.categoryId === category.id ? 'bg-primary-400/20' : 'bg-white/10'
+                      activeFilters.categoryId === category.id ? 'bg-blue-400/20' : 'bg-white/10'
                     }`}
                   >
                     <CategoryIcon icon={category.icon} size={14} color={category.color} />
                   </div>
-                  <span className="text-sm font-medium">{category.name}</span>
-                  {activeFilters.categoryId === category.id && <Check size={14} />}
+                  <span className="text-xs font-medium text-center leading-tight">{category.name}</span>
                 </motion.button>
               ))}
           </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { createPortal } from 'react-dom'
 import {
   X,
   ArrowUpCircle,
@@ -12,16 +13,16 @@ import {
 import { useFinanceStore } from '../store/useFinanceStore'
 import { parseAmount } from '../utils/format'
 import { CategoryIcon } from './CategoryIcon'
-import { SheetCard } from './Card'
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll'
 import telegramAPI from '../telegram/telegram'
 import type { TxType } from '../types'
 
 interface AddTransactionSheetProps {
-  isOpen: boolean
+  open: boolean
   onClose: () => void
 }
 
-export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({ isOpen, onClose }) => {
+export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({ open, onClose }) => {
   const { addTransaction, categories } = useFinanceStore()
 
   const [type, setType] = useState<TxType>('expense')
@@ -30,6 +31,8 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({ isOpen
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [note, setNote] = useState('')
   const [errors, setErrors] = useState<{ amount?: string }>({})
+
+  useLockBodyScroll(open)
 
   // Filter categories by type
   const filteredCategories = categories.filter((cat) => cat.type === type)
@@ -47,13 +50,20 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({ isOpen
 
   // Initialize category when form opens
   useEffect(() => {
-    if (isOpen && !categoryId) {
+    if (open && !categoryId) {
       const defaultCategory = filteredCategories[0]
       if (defaultCategory) {
         setCategoryId(defaultCategory.id)
       }
     }
-  }, [isOpen, categoryId, filteredCategories])
+  }, [open, categoryId, filteredCategories])
+
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, onClose])
 
   const handleSubmit = () => {
     const newErrors: { amount?: string } = {}
@@ -101,6 +111,8 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({ isOpen
     setCategoryId('')
   }
 
+  if (!open) return null
+
   const overlayVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 },
@@ -145,245 +157,260 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({ isOpen
     visible: { opacity: 1, y: 0 },
   }
 
-  return (
+  const sheet = (
     <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Overlay */}
-          <motion.div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-            variants={overlayVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            onClick={handleClose}
-          />
+      {/* Overlay */}
+      <motion.div
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1000] touch-manipulation"
+        variants={overlayVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
+      />
 
-          {/* Sheet */}
+      {/* Sheet */}
+      <motion.div
+        className="fixed bottom-0 left-0 right-0 z-[1001]"
+        variants={sheetVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+      >
+        <div 
+          role="dialog"
+          aria-modal="true"
+          className="
+            w-full rounded-t-3xl
+            bg-[var(--tg-theme-bg-color,#101010)]
+            text-[var(--tg-theme-text-color,#fff)]
+            shadow-2xl
+            max-h-[min(92dvh,720px)]
+            h-auto
+            scroll-y-touch
+            p-6
+            pt-3
+            glass-card
+          "
+          style={{
+            paddingBottom: 'calc(16px + env(safe-area-inset-bottom))',
+          }}
+        >
           <motion.div
-            className="fixed bottom-0 left-0 right-0 z-50"
-            variants={sheetVariants}
+            variants={contentVariants}
             initial="hidden"
             animate="visible"
-            exit="exit"
           >
-            <SheetCard className="rounded-t-4xl rounded-b-none max-h-[90vh] overflow-hidden">
-              <motion.div
-                className="overflow-y-auto"
-                variants={contentVariants}
-                initial="hidden"
-                animate="visible"
+            {/* Handle bar */}
+            <motion.div
+              className="w-16 h-1.5 bg-white/30 rounded-full mx-auto mb-8"
+              variants={itemVariants}
+            />
+
+            {/* Header */}
+            <motion.div
+              className="flex items-center justify-between mb-8"
+              variants={itemVariants}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+                  <CreditCard size={24} className="text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-[var(--tg-theme-text-color)]">Новая операция</h2>
+              </div>
+              <motion.button
+                onClick={handleClose}
+                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                {/* Handle bar */}
-                <motion.div
-                  className="w-16 h-1.5 bg-tg-hint/30 rounded-full mx-auto mb-8"
-                  variants={itemVariants}
-                />
+                <X size={20} className="text-[var(--tg-theme-hint-color)]" />
+              </motion.button>
+            </motion.div>
 
-                {/* Header */}
-                <motion.div
-                  className="flex items-center justify-between mb-8"
-                  variants={itemVariants}
+            {/* Type selector */}
+            <motion.div className="mb-8" variants={itemVariants}>
+              <label className="block text-sm text-[var(--tg-theme-hint-color)] font-medium mb-4 uppercase tracking-wide">
+                Тип операции
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <motion.button
+                  onClick={() => handleTypeChange('expense')}
+                  className={`p-4 rounded-2xl min-h-[48px] flex items-center justify-center space-x-3 transition-all duration-300 ${
+                    type === 'expense'
+                      ? 'bg-gradient-to-br from-red-500 to-red-600 text-white shadow-lg'
+                      : 'bg-white/10 hover:bg-white/15 text-[var(--tg-theme-text-color)]'
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-lg">
-                      <CreditCard size={24} className="text-white" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-tg-text">Новая операция</h2>
-                  </div>
-                  <motion.button
-                    onClick={handleClose}
-                    className="w-10 h-10 rounded-xl bg-tg-hint/10 hover:bg-tg-hint/20 flex items-center justify-center transition-colors"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                  <ArrowDownCircle size={24} />
+                  <span className="font-semibold">Расход</span>
+                </motion.button>
+                <motion.button
+                  onClick={() => handleTypeChange('income')}
+                  className={`p-4 rounded-2xl min-h-[48px] flex items-center justify-center space-x-3 transition-all duration-300 ${
+                    type === 'income'
+                      ? 'bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg'
+                      : 'bg-white/10 hover:bg-white/15 text-[var(--tg-theme-text-color)]'
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <ArrowUpCircle size={24} />
+                  <span className="font-semibold">Доход</span>
+                </motion.button>
+              </div>
+            </motion.div>
+
+            {/* Amount input */}
+            <motion.div className="mb-8" variants={itemVariants}>
+              <label className="block text-sm text-[var(--tg-theme-hint-color)] font-medium mb-4 uppercase tracking-wide">
+                Сумма <span className="text-red-400">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={amount}
+                  onChange={(e) => {
+                    setAmount(e.target.value)
+                    setErrors({})
+                  }}
+                  placeholder="0"
+                  className={`w-full p-6 text-4xl font-bold text-center bg-white/10 rounded-2xl border-2 transition-all duration-300 
+                              placeholder:text-[var(--tg-theme-hint-color)]/40 focus:border-blue-400 focus:outline-none text-[var(--tg-theme-text-color)] ${
+                                errors.amount
+                                  ? 'border-red-400 focus:border-red-400'
+                                  : 'border-transparent'
+                              }`}
+                  autoFocus
+                />
+                <div className="absolute right-6 top-1/2 transform -translate-y-1/2 text-[var(--tg-theme-hint-color)] text-2xl font-medium">
+                  ₽
+                </div>
+              </div>
+              <AnimatePresence>
+                {errors.amount && (
+                  <motion.div
+                    className="flex items-center gap-2 mt-3 text-red-400 text-sm"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
                   >
-                    <X size={20} className="text-tg-hint" />
-                  </motion.button>
-                </motion.div>
+                    <AlertCircle size={16} />
+                    <span>{errors.amount}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
-                {/* Type selector */}
-                <motion.div className="mb-8" variants={itemVariants}>
-                  <label className="block text-sm text-tg-hint font-medium mb-4 uppercase tracking-wide">
-                    Тип операции
-                  </label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <motion.button
-                      onClick={() => handleTypeChange('expense')}
-                      className={`p-4 rounded-2xl min-h-touch flex items-center justify-center space-x-3 transition-all duration-300 ${
-                        type === 'expense'
-                          ? 'bg-gradient-to-br from-danger-400 to-danger-600 text-white shadow-lg shadow-danger-400/25'
-                          : 'glass hover:bg-white/15'
-                      }`}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <ArrowDownCircle size={24} />
-                      <span className="font-semibold">Расход</span>
-                    </motion.button>
-                    <motion.button
-                      onClick={() => handleTypeChange('income')}
-                      className={`p-4 rounded-2xl min-h-touch flex items-center justify-center space-x-3 transition-all duration-300 ${
-                        type === 'income'
-                          ? 'bg-gradient-to-br from-success-400 to-success-600 text-white shadow-lg shadow-success-400/25'
-                          : 'glass hover:bg-white/15'
-                      }`}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <ArrowUpCircle size={24} />
-                      <span className="font-semibold">Доход</span>
-                    </motion.button>
-                  </div>
-                </motion.div>
-
-                {/* Amount input */}
-                <motion.div className="mb-8" variants={itemVariants}>
-                  <label className="block text-sm text-tg-hint font-medium mb-4 uppercase tracking-wide">
-                    Сумма <span className="text-danger-400">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      value={amount}
-                      onChange={(e) => {
-                        setAmount(e.target.value)
-                        setErrors({})
-                      }}
-                      placeholder="0"
-                      className={`w-full p-6 text-4xl font-bold text-center glass rounded-2xl border-2 transition-all duration-300 
-                                  placeholder:text-tg-hint/40 focus:border-primary-400 focus:shadow-glow ${
-                                    errors.amount
-                                      ? 'border-danger-400 focus:border-danger-400'
-                                      : 'border-transparent'
-                                  }`}
-                      autoFocus
-                    />
-                    <div className="absolute right-6 top-1/2 transform -translate-y-1/2 text-tg-hint text-2xl font-medium">
-                      ₽
-                    </div>
-                  </div>
-                  <AnimatePresence>
-                    {errors.amount && (
-                      <motion.div
-                        className="flex items-center gap-2 mt-3 text-danger-400 text-sm"
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                      >
-                        <AlertCircle size={16} />
-                        <span>{errors.amount}</span>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-
-                {/* Category selector */}
-                <motion.div className="mb-8" variants={itemVariants}>
-                  <label className="block text-sm text-tg-hint font-medium mb-4 uppercase tracking-wide">
-                    Категория <span className="text-danger-400">*</span>
-                  </label>
-                  <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto">
-                    {filteredCategories.map((category) => (
-                      <motion.button
-                        key={category.id}
-                        onClick={() => {
-                          telegramAPI.selectionChanged()
-                          setCategoryId(category.id)
-                        }}
-                        className={`p-4 rounded-2xl flex items-center space-x-3 transition-all duration-300 min-h-touch ${
-                          categoryId === category.id
-                            ? 'glass-gradient border-2 border-primary-400/50 shadow-glow'
-                            : 'glass hover:bg-white/15'
-                        }`}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <div
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                            categoryId === category.id ? 'bg-primary-400/20' : 'bg-white/10'
-                          }`}
-                        >
-                          <CategoryIcon icon={category.icon} size={20} color={category.color} />
-                        </div>
-                        <span className="font-medium text-sm text-tg-text">{category.name}</span>
-                      </motion.button>
-                    ))}
-                  </div>
-                </motion.div>
-
-                {/* Date input */}
-                <motion.div className="mb-8" variants={itemVariants}>
-                  <label className="block text-sm text-tg-hint font-medium mb-4 uppercase tracking-wide">
-                    Дата
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="date"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      className="w-full p-4 glass rounded-2xl border-2 border-transparent focus:border-primary-400 
-                               focus:shadow-glow transition-all duration-300 text-tg-text"
-                    />
-                    <Calendar
-                      size={20}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-tg-hint pointer-events-none"
-                    />
-                  </div>
-                </motion.div>
-
-                {/* Note input */}
-                <motion.div className="mb-10" variants={itemVariants}>
-                  <label className="block text-sm text-tg-hint font-medium mb-4 uppercase tracking-wide">
-                    Комментарий
-                  </label>
-                  <div className="relative">
-                    <textarea
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                      placeholder="Добавьте описание (необязательно)"
-                      rows={3}
-                      className="w-full p-4 glass rounded-2xl border-2 border-transparent focus:border-primary-400 
-                               focus:shadow-glow transition-all duration-300 resize-none text-tg-text 
-                               placeholder:text-tg-hint/40"
-                    />
-                    <FileText
-                      size={20}
-                      className="absolute right-4 top-4 text-tg-hint pointer-events-none"
-                    />
-                  </div>
-                </motion.div>
-
-                {/* Action buttons */}
-                <motion.div className="grid grid-cols-2 gap-4" variants={itemVariants}>
+            {/* Category selector */}
+            <motion.div className="mb-8" variants={itemVariants}>
+              <label className="block text-sm text-[var(--tg-theme-hint-color)] font-medium mb-4 uppercase tracking-wide">
+                Категория <span className="text-red-400">*</span>
+              </label>
+              <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto">
+                {filteredCategories.map((category) => (
                   <motion.button
-                    onClick={handleClose}
-                    className="p-4 rounded-2xl glass hover:bg-white/15 text-tg-text font-semibold 
-                             transition-all duration-300 min-h-touch"
+                    key={category.id}
+                    onClick={() => {
+                      telegramAPI.selectionChanged()
+                      setCategoryId(category.id)
+                    }}
+                    className={`p-4 rounded-2xl flex items-center space-x-3 transition-all duration-300 min-h-[48px] ${
+                      categoryId === category.id
+                        ? 'bg-white/20 border-2 border-blue-400/50 shadow-lg'
+                        : 'bg-white/10 hover:bg-white/15'
+                    }`}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    Отмена
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                        categoryId === category.id ? 'bg-blue-400/20' : 'bg-white/10'
+                      }`}
+                    >
+                      <CategoryIcon icon={category.icon} size={20} color={category.color} />
+                    </div>
+                    <span className="font-medium text-sm text-[var(--tg-theme-text-color)]">{category.name}</span>
                   </motion.button>
-                  <motion.button
-                    onClick={handleSubmit}
-                    disabled={!amount || !categoryId}
-                    className={`p-4 rounded-2xl font-semibold transition-all duration-300 min-h-touch ${
-                      amount && categoryId
-                        ? 'bg-gradient-to-br from-primary-400 to-primary-600 text-white shadow-lg shadow-primary-400/25 hover:shadow-xl'
-                        : 'bg-tg-hint/20 text-tg-hint/50 cursor-not-allowed'
-                    }`}
-                    whileHover={amount && categoryId ? { scale: 1.02 } : {}}
-                    whileTap={amount && categoryId ? { scale: 0.98 } : {}}
-                  >
-                    Сохранить
-                  </motion.button>
-                </motion.div>
-              </motion.div>
-            </SheetCard>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Date input */}
+            <motion.div className="mb-8" variants={itemVariants}>
+              <label className="block text-sm text-[var(--tg-theme-hint-color)] font-medium mb-4 uppercase tracking-wide">
+                Дата
+              </label>
+              <div className="relative">
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="w-full p-4 bg-white/10 rounded-2xl border-2 border-transparent focus:border-blue-400 
+                           focus:outline-none transition-all duration-300 text-[var(--tg-theme-text-color)]"
+                />
+                <Calendar
+                  size={20}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[var(--tg-theme-hint-color)] pointer-events-none"
+                />
+              </div>
+            </motion.div>
+
+            {/* Note input */}
+            <motion.div className="mb-10" variants={itemVariants}>
+              <label className="block text-sm text-[var(--tg-theme-hint-color)] font-medium mb-4 uppercase tracking-wide">
+                Комментарий
+              </label>
+              <div className="relative">
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Добавьте описание (необязательно)"
+                  rows={3}
+                  className="w-full p-4 bg-white/10 rounded-2xl border-2 border-transparent focus:border-blue-400 
+                           focus:outline-none transition-all duration-300 resize-none text-[var(--tg-theme-text-color)] 
+                           placeholder:text-[var(--tg-theme-hint-color)]/40"
+                />
+                <FileText
+                  size={20}
+                  className="absolute right-4 top-4 text-[var(--tg-theme-hint-color)] pointer-events-none"
+                />
+              </div>
+            </motion.div>
+
+            {/* Action buttons */}
+            <motion.div className="grid grid-cols-2 gap-4" variants={itemVariants}>
+              <motion.button
+                onClick={handleClose}
+                className="p-4 rounded-2xl bg-white/10 hover:bg-white/15 text-[var(--tg-theme-text-color)] font-semibold 
+                         transition-all duration-300 min-h-[48px]"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Отмена
+              </motion.button>
+              <motion.button
+                onClick={handleSubmit}
+                disabled={!amount || !categoryId}
+                className={`p-4 rounded-2xl font-semibold transition-all duration-300 min-h-[48px] ${
+                  amount && categoryId
+                    ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg hover:shadow-xl'
+                    : 'bg-white/20 text-[var(--tg-theme-hint-color)]/50 cursor-not-allowed'
+                }`}
+                whileHover={amount && categoryId ? { scale: 1.02 } : {}}
+                whileTap={amount && categoryId ? { scale: 0.98 } : {}}
+              >
+                Сохранить
+              </motion.button>
+            </motion.div>
           </motion.div>
-        </>
-      )}
+        </div>
+      </motion.div>
     </AnimatePresence>
   )
+
+  return createPortal(sheet, document.body)
 }

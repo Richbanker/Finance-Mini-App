@@ -39,7 +39,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-tg mobile-scroll">
+    <div className="min-h-screen h-screen-dvh">
       <Header onAddTransaction={() => setIsAddSheetOpen(true)} onExport={handleExport} />
 
       <main className="pb-6 sm:pb-8 safe-bottom mobile-py-4">
@@ -49,7 +49,7 @@ function App() {
         <TransactionList />
       </main>
 
-      <AddTransactionSheet isOpen={isAddSheetOpen} onClose={() => setIsAddSheetOpen(false)} />
+      <AddTransactionSheet open={isAddSheetOpen} onClose={() => setIsAddSheetOpen(false)} />
     </div>
   )
 }

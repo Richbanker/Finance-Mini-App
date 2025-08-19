@@ -17,10 +17,12 @@ import { useFinanceStore } from '../store/useFinanceStore'
 import { formatCurrency, formatDateShort } from '../utils/format'
 import { CategoryIcon } from './CategoryIcon'
 import { Card } from './Card'
+import { useResizeRerender } from '../hooks/useResizeRerender'
 
 export const Charts: React.FC = () => {
   const { transactions: allTransactions, categories, settings } = useFinanceStore()
   const { currency } = settings
+  const { containerRef, tick } = useResizeRerender()
 
   // Prepare data for PieChart (expenses by category) - use ALL transactions, not filtered
   const expensesByCategory = allTransactions
@@ -178,6 +180,7 @@ export const Charts: React.FC = () => {
         className="px-6 py-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
+        ref={containerRef}
       >
         <Card className="text-center py-12">
           <motion.div
@@ -207,6 +210,8 @@ export const Charts: React.FC = () => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
+      ref={containerRef}
+      key={tick} // Force rerender when container resizes
     >
       {/* Pie Chart */}
       {pieData.length > 0 && (
@@ -224,7 +229,8 @@ export const Charts: React.FC = () => {
             </div>
 
             {/* Chart */}
-            <ResponsiveContainer width="100%" height={350}>
+            <div className="w-full" style={{ minHeight: 350 }}>
+              <ResponsiveContainer width="100%" height={350}>
               <PieChart>
                 <defs>
                   {pieData.map((entry, index) => (
@@ -259,6 +265,7 @@ export const Charts: React.FC = () => {
                 <Tooltip content={<PieTooltip />} />
               </PieChart>
             </ResponsiveContainer>
+            </div>
 
             {/* Legend */}
             <div className="grid grid-cols-2 gap-3 mt-6">
@@ -304,7 +311,8 @@ export const Charts: React.FC = () => {
             </div>
 
             {/* Chart */}
-            <ResponsiveContainer width="100%" height={300}>
+            <div className="w-full" style={{ minHeight: 300 }}>
+              <ResponsiveContainer width="100%" height={300}>
               <LineChart data={lineData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                 <defs>
                   <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
@@ -386,6 +394,7 @@ export const Charts: React.FC = () => {
                 />
               </LineChart>
             </ResponsiveContainer>
+            </div>
 
             {/* Legend */}
             <div className="flex justify-center gap-6 mt-4">
