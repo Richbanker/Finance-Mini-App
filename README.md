@@ -1,5 +1,8 @@
 # 💰 Finance Mini App
 
+
+[![Просмотры README](https://vbr.nathanchung.dev/badge?page_id=Richbanker.Finance-Mini-App&text=README_Views)](https://github.com/Richbanker/Finance-Mini-App)
+
 > Modern Telegram Mini App for personal finance tracking with beautiful UI and real-time analytics
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Richbanker/Finance-Mini-App)
