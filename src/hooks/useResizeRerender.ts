@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from "react";
 
 export function useResizeRerender() {
   const [tick, setTick] = useState(0);
@@ -10,7 +10,7 @@ export function useResizeRerender() {
 
     const resizeObserver = new ResizeObserver(() => {
       // Trigger rerender by updating state
-      setTick(prev => prev + 1);
+      setTick((prev) => prev + 1);
     });
 
     resizeObserver.observe(container);
