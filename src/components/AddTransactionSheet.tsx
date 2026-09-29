@@ -166,7 +166,9 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({ open, 
         initial="hidden"
         animate="visible"
         exit="exit"
-        onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) handleClose()
+        }}
       />
 
       {/* Sheet */}
@@ -177,7 +179,7 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({ open, 
         animate="visible"
         exit="exit"
       >
-        <div 
+        <div
           role="dialog"
           aria-modal="true"
           className="
@@ -196,11 +198,7 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({ open, 
             paddingBottom: 'calc(16px + env(safe-area-inset-bottom))',
           }}
         >
-          <motion.div
-            variants={contentVariants}
-            initial="hidden"
-            animate="visible"
-          >
+          <motion.div variants={contentVariants} initial="hidden" animate="visible">
             {/* Handle bar */}
             <motion.div
               className="w-16 h-1.5 bg-white/30 rounded-full mx-auto mb-8"
@@ -208,15 +206,14 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({ open, 
             />
 
             {/* Header */}
-            <motion.div
-              className="flex items-center justify-between mb-8"
-              variants={itemVariants}
-            >
+            <motion.div className="flex items-center justify-between mb-8" variants={itemVariants}>
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
                   <CreditCard size={24} className="text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-[var(--tg-theme-text-color)]">Новая операция</h2>
+                <h2 className="text-2xl font-bold text-[var(--tg-theme-text-color)]">
+                  Новая операция
+                </h2>
               </div>
               <motion.button
                 onClick={handleClose}
@@ -333,7 +330,9 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({ open, 
                     >
                       <CategoryIcon icon={category.icon} size={20} color={category.color} />
                     </div>
-                    <span className="font-medium text-sm text-[var(--tg-theme-text-color)]">{category.name}</span>
+                    <span className="font-medium text-sm text-[var(--tg-theme-text-color)]">
+                      {category.name}
+                    </span>
                   </motion.button>
                 ))}
               </div>

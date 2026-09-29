@@ -1,24 +1,24 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react'
 
 export function useResizeRerender() {
-  const [tick, setTick] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [tick, setTick] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    const container = containerRef.current
+    if (!container) return
 
     const resizeObserver = new ResizeObserver(() => {
       // Trigger rerender by updating state
-      setTick(prev => prev + 1);
-    });
+      setTick((prev) => prev + 1)
+    })
 
-    resizeObserver.observe(container);
+    resizeObserver.observe(container)
 
     return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
+      resizeObserver.disconnect()
+    }
+  }, [])
 
-  return { containerRef, tick };
+  return { containerRef, tick }
 }

@@ -46,9 +46,27 @@ interface FinanceState {
 // Default categories with modern SVG icons
 const defaultCategories: Category[] = [
   // Expense categories
-  { id: 'food', name: 'Еда', type: 'expense', icon: 'utensils-crossed', color: '#f97316' },
-  { id: 'transport', name: 'Транспорт', type: 'expense', icon: 'car', color: '#3b82f6' },
-  { id: 'shopping', name: 'Покупки', type: 'expense', icon: 'shopping-bag', color: '#ec4899' },
+  {
+    id: 'food',
+    name: 'Еда',
+    type: 'expense',
+    icon: 'utensils-crossed',
+    color: '#f97316',
+  },
+  {
+    id: 'transport',
+    name: 'Транспорт',
+    type: 'expense',
+    icon: 'car',
+    color: '#3b82f6',
+  },
+  {
+    id: 'shopping',
+    name: 'Покупки',
+    type: 'expense',
+    icon: 'shopping-bag',
+    color: '#ec4899',
+  },
   {
     id: 'entertainment',
     name: 'Развлечения',
@@ -56,10 +74,34 @@ const defaultCategories: Category[] = [
     icon: 'gamepad-2',
     color: '#8b5cf6',
   },
-  { id: 'health', name: 'Здоровье', type: 'expense', icon: 'pill', color: '#ef4444' },
-  { id: 'utilities', name: 'ЖКХ', type: 'expense', icon: 'home', color: '#06b6d4' },
-  { id: 'finance', name: 'Финансы', type: 'expense', icon: 'credit-card', color: '#8b5cf6' },
-  { id: 'travel', name: 'Путешествия', type: 'expense', icon: 'plane', color: '#06b6d4' },
+  {
+    id: 'health',
+    name: 'Здоровье',
+    type: 'expense',
+    icon: 'pill',
+    color: '#ef4444',
+  },
+  {
+    id: 'utilities',
+    name: 'ЖКХ',
+    type: 'expense',
+    icon: 'home',
+    color: '#06b6d4',
+  },
+  {
+    id: 'finance',
+    name: 'Финансы',
+    type: 'expense',
+    icon: 'credit-card',
+    color: '#8b5cf6',
+  },
+  {
+    id: 'travel',
+    name: 'Путешествия',
+    type: 'expense',
+    icon: 'plane',
+    color: '#06b6d4',
+  },
   {
     id: 'education',
     name: 'Образование',
@@ -67,18 +109,78 @@ const defaultCategories: Category[] = [
     icon: 'graduation-cap',
     color: '#3b82f6',
   },
-  { id: 'family', name: 'Семья', type: 'expense', icon: 'heart', color: '#ec4899' },
-  { id: 'coffee', name: 'Кафе', type: 'expense', icon: 'coffee', color: '#a855f7' },
-  { id: 'clothing', name: 'Одежда', type: 'expense', icon: 'shirt', color: '#f59e0b' },
-  { id: 'fuel', name: 'Топливо', type: 'expense', icon: 'fuel', color: '#ef4444' },
-  { id: 'other-expense', name: 'Прочее', type: 'expense', icon: 'package', color: '#6b7280' },
+  {
+    id: 'family',
+    name: 'Семья',
+    type: 'expense',
+    icon: 'heart',
+    color: '#ec4899',
+  },
+  {
+    id: 'coffee',
+    name: 'Кафе',
+    type: 'expense',
+    icon: 'coffee',
+    color: '#a855f7',
+  },
+  {
+    id: 'clothing',
+    name: 'Одежда',
+    type: 'expense',
+    icon: 'shirt',
+    color: '#f59e0b',
+  },
+  {
+    id: 'fuel',
+    name: 'Топливо',
+    type: 'expense',
+    icon: 'fuel',
+    color: '#ef4444',
+  },
+  {
+    id: 'other-expense',
+    name: 'Прочее',
+    type: 'expense',
+    icon: 'package',
+    color: '#6b7280',
+  },
 
   // Income categories
-  { id: 'salary', name: 'Зарплата', type: 'income', icon: 'banknote', color: '#10b981' },
-  { id: 'bonus', name: 'Бонус', type: 'income', icon: 'gift', color: '#f59e0b' },
-  { id: 'investment', name: 'Инвестиции', type: 'income', icon: 'trending-up', color: '#22c55e' },
-  { id: 'freelance', name: 'Фриланс', type: 'income', icon: 'laptop', color: '#a855f7' },
-  { id: 'other-income', name: 'Прочее', type: 'income', icon: 'dollar-sign', color: '#84cc16' },
+  {
+    id: 'salary',
+    name: 'Зарплата',
+    type: 'income',
+    icon: 'banknote',
+    color: '#10b981',
+  },
+  {
+    id: 'bonus',
+    name: 'Бонус',
+    type: 'income',
+    icon: 'gift',
+    color: '#f59e0b',
+  },
+  {
+    id: 'investment',
+    name: 'Инвестиции',
+    type: 'income',
+    icon: 'trending-up',
+    color: '#22c55e',
+  },
+  {
+    id: 'freelance',
+    name: 'Фриланс',
+    type: 'income',
+    icon: 'laptop',
+    color: '#a855f7',
+  },
+  {
+    id: 'other-income',
+    name: 'Прочее',
+    type: 'income',
+    icon: 'dollar-sign',
+    color: '#84cc16',
+  },
 ]
 
 export const useFinanceStore = create<FinanceState>()(
@@ -315,8 +417,6 @@ export const useFinanceStore = create<FinanceState>()(
 
         set({ transactions: seedTransactions })
       },
-
-
 
       updateCategories: () => {
         set({ categories: defaultCategories })

@@ -209,7 +209,9 @@ export const Filters: React.FC = () => {
                   >
                     <CategoryIcon icon={category.icon} size={14} color={category.color} />
                   </div>
-                  <span className="text-xs font-medium text-center leading-tight">{category.name}</span>
+                  <span className="text-xs font-medium text-center leading-tight">
+                    {category.name}
+                  </span>
                 </motion.button>
               ))}
           </div>

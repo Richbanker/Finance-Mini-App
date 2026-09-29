@@ -48,7 +48,13 @@ export const Charts: React.FC = () => {
       },
       {} as Record<
         string,
-        { name: string; icon: string; value: number; color: string; categoryId: string }
+        {
+          name: string
+          icon: string
+          value: number
+          color: string
+          categoryId: string
+        }
       >
     )
 
@@ -130,7 +136,9 @@ export const Charts: React.FC = () => {
     payload,
   }: {
     active?: boolean
-    payload?: Array<{ payload: { name: string; value: number; color: string; icon: string } }>
+    payload?: Array<{
+      payload: { name: string; value: number; color: string; icon: string }
+    }>
   }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
@@ -231,40 +239,40 @@ export const Charts: React.FC = () => {
             {/* Chart */}
             <div className="w-full" style={{ minHeight: 350 }}>
               <ResponsiveContainer width="100%" height={350}>
-              <PieChart>
-                <defs>
-                  {pieData.map((entry, index) => (
-                    <linearGradient
-                      key={`gradient-${index}`}
-                      id={`gradient-${index}`}
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="100%"
-                    >
-                      <stop offset="0%" stopColor={entry.color} stopOpacity={0.8} />
-                      <stop offset="100%" stopColor={entry.color} stopOpacity={0.6} />
-                    </linearGradient>
-                  ))}
-                </defs>
-                <Pie
-                  data={pieData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={120}
-                  paddingAngle={2}
-                  strokeWidth={0}
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={`url(#gradient-${index})`} stroke="none" />
-                  ))}
-                </Pie>
-                <Tooltip content={<PieTooltip />} />
-              </PieChart>
-            </ResponsiveContainer>
+                <PieChart>
+                  <defs>
+                    {pieData.map((entry, index) => (
+                      <linearGradient
+                        key={`gradient-${index}`}
+                        id={`gradient-${index}`}
+                        x1="0%"
+                        y1="0%"
+                        x2="100%"
+                        y2="100%"
+                      >
+                        <stop offset="0%" stopColor={entry.color} stopOpacity={0.8} />
+                        <stop offset="100%" stopColor={entry.color} stopOpacity={0.6} />
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <Pie
+                    data={pieData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={120}
+                    paddingAngle={2}
+                    strokeWidth={0}
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={`url(#gradient-${index})`} stroke="none" />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<PieTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
 
             {/* Legend */}
@@ -313,87 +321,102 @@ export const Charts: React.FC = () => {
             {/* Chart */}
             <div className="w-full" style={{ minHeight: 300 }}>
               <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={lineData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-                <defs>
-                  <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
+                <LineChart data={lineData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                  <defs>
+                    <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
 
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="rgba(255,255,255,0.08)"
-                  horizontal={true}
-                  vertical={false}
-                />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="rgba(255,255,255,0.08)"
+                    horizontal={true}
+                    vertical={false}
+                  />
 
-                <XAxis
-                  dataKey="date"
-                  stroke="var(--tg-theme-hint-color)"
-                  fontSize={11}
-                  angle={-45}
-                  textAnchor="end"
-                  height={80}
-                  tick={{ fill: 'var(--tg-theme-hint-color)' }}
-                />
+                  <XAxis
+                    dataKey="date"
+                    stroke="var(--tg-theme-hint-color)"
+                    fontSize={11}
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                    tick={{ fill: 'var(--tg-theme-hint-color)' }}
+                  />
 
-                <YAxis
-                  stroke="var(--tg-theme-hint-color)"
-                  fontSize={11}
-                  tickFormatter={(value) =>
-                    `${Math.abs(value) >= 1000 ? `${(value / 1000).toFixed(0)}k` : value}`
-                  }
-                  tick={{ fill: 'var(--tg-theme-hint-color)' }}
-                />
+                  <YAxis
+                    stroke="var(--tg-theme-hint-color)"
+                    fontSize={11}
+                    tickFormatter={(value) =>
+                      `${Math.abs(value) >= 1000 ? `${(value / 1000).toFixed(0)}k` : value}`
+                    }
+                    tick={{ fill: 'var(--tg-theme-hint-color)' }}
+                  />
 
-                <Tooltip content={<CustomTooltip />} />
+                  <Tooltip content={<CustomTooltip />} />
 
-                <Line
-                  type="monotone"
-                  dataKey="income"
-                  stroke="#22c55e"
-                  name="Доход"
-                  strokeWidth={3}
-                  dot={{ fill: '#22c55e', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: '#22c55e', strokeWidth: 2, fill: '#ffffff' }}
-                  fillOpacity={1}
-                  fill="url(#incomeGradient)"
-                />
+                  <Line
+                    type="monotone"
+                    dataKey="income"
+                    stroke="#22c55e"
+                    name="Доход"
+                    strokeWidth={3}
+                    dot={{ fill: '#22c55e', strokeWidth: 2, r: 4 }}
+                    activeDot={{
+                      r: 6,
+                      stroke: '#22c55e',
+                      strokeWidth: 2,
+                      fill: '#ffffff',
+                    }}
+                    fillOpacity={1}
+                    fill="url(#incomeGradient)"
+                  />
 
-                <Line
-                  type="monotone"
-                  dataKey="expense"
-                  stroke="#ef4444"
-                  name="Расход"
-                  strokeWidth={3}
-                  dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: '#ef4444', strokeWidth: 2, fill: '#ffffff' }}
-                  fillOpacity={1}
-                  fill="url(#expenseGradient)"
-                />
+                  <Line
+                    type="monotone"
+                    dataKey="expense"
+                    stroke="#ef4444"
+                    name="Расход"
+                    strokeWidth={3}
+                    dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }}
+                    activeDot={{
+                      r: 6,
+                      stroke: '#ef4444',
+                      strokeWidth: 2,
+                      fill: '#ffffff',
+                    }}
+                    fillOpacity={1}
+                    fill="url(#expenseGradient)"
+                  />
 
-                <Line
-                  type="monotone"
-                  dataKey="balance"
-                  stroke="#3b82f6"
-                  name="Баланс"
-                  strokeWidth={3}
-                  dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2, fill: '#ffffff' }}
-                  fillOpacity={1}
-                  fill="url(#balanceGradient)"
-                />
-              </LineChart>
-            </ResponsiveContainer>
+                  <Line
+                    type="monotone"
+                    dataKey="balance"
+                    stroke="#3b82f6"
+                    name="Баланс"
+                    strokeWidth={3}
+                    dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
+                    activeDot={{
+                      r: 6,
+                      stroke: '#3b82f6',
+                      strokeWidth: 2,
+                      fill: '#ffffff',
+                    }}
+                    fillOpacity={1}
+                    fill="url(#balanceGradient)"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
 
             {/* Legend */}
