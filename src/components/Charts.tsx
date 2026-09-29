@@ -1,6 +1,6 @@
-import React from 'react'
-import { motion } from 'framer-motion'
-import { PieChart as PieChartIcon, TrendingUp, BarChart3 } from 'lucide-react'
+import React from "react";
+import { motion } from "framer-motion";
+import { PieChart as PieChartIcon, TrendingUp, BarChart3 } from "lucide-react";
 import {
   PieChart,
   Pie,
@@ -12,27 +12,31 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
-} from 'recharts'
-import { useFinanceStore } from '../store/useFinanceStore'
-import { formatCurrency, formatDateShort } from '../utils/format'
-import { CategoryIcon } from './CategoryIcon'
-import { Card } from './Card'
-import { useResizeRerender } from '../hooks/useResizeRerender'
+} from "recharts";
+import { useFinanceStore } from "../store/useFinanceStore";
+import { formatCurrency, formatDateShort } from "../utils/format";
+import { CategoryIcon } from "./CategoryIcon";
+import { Card } from "./Card";
+import { useResizeRerender } from "../hooks/useResizeRerender";
 
 export const Charts: React.FC = () => {
-  const { transactions: allTransactions, categories, settings } = useFinanceStore()
-  const { currency } = settings
-  const { containerRef, tick } = useResizeRerender()
+  const {
+    transactions: allTransactions,
+    categories,
+    settings,
+  } = useFinanceStore();
+  const { currency } = settings;
+  const { containerRef, tick } = useResizeRerender();
 
   // Prepare data for PieChart (expenses by category) - use ALL transactions, not filtered
   const expensesByCategory = allTransactions
-    .filter((tx) => tx.type === 'expense')
+    .filter((tx) => tx.type === "expense")
     .reduce(
       (acc, tx) => {
-        const category = categories.find((c) => c.id === tx.categoryId)
-        const name = category?.name || 'Без категории'
-        const icon = category?.icon || 'package'
-        const color = category?.color || '#6b7280'
+        const category = categories.find((c) => c.id === tx.categoryId);
+        const name = category?.name || "Без категории";
+        const icon = category?.icon || "package";
+        const color = category?.color || "#6b7280";
 
         if (!acc[tx.categoryId]) {
           acc[tx.categoryId] = {
@@ -41,16 +45,22 @@ export const Charts: React.FC = () => {
             value: 0,
             color,
             categoryId: tx.categoryId,
-          }
+          };
         }
-        acc[tx.categoryId].value += tx.amount
-        return acc
+        acc[tx.categoryId].value += tx.amount;
+        return acc;
       },
       {} as Record<
         string,
-        { name: string; icon: string; value: number; color: string; categoryId: string }
-      >
-    )
+        {
+          name: string;
+          icon: string;
+          value: number;
+          color: string;
+          categoryId: string;
+        }
+      >,
+    );
 
   const pieData = Object.values(expensesByCategory)
     .map((item) => ({
@@ -61,26 +71,26 @@ export const Charts: React.FC = () => {
       categoryId: item.categoryId,
     }))
     .sort((a, b) => b.value - a.value)
-    .slice(0, 8) // Show top 8 categories
+    .slice(0, 8); // Show top 8 categories
 
   // Note: colors are handled individually in the Cell components below
 
   // Prepare data for LineChart (daily balance)
   const dailyData = allTransactions.reduce(
     (acc, tx) => {
-      const date = tx.date
+      const date = tx.date;
       if (!acc[date]) {
-        acc[date] = { income: 0, expense: 0 }
+        acc[date] = { income: 0, expense: 0 };
       }
-      if (tx.type === 'income') {
-        acc[date].income += tx.amount
+      if (tx.type === "income") {
+        acc[date].income += tx.amount;
       } else {
-        acc[date].expense += tx.amount
+        acc[date].expense += tx.amount;
       }
-      return acc
+      return acc;
     },
-    {} as Record<string, { income: number; expense: number }>
-  )
+    {} as Record<string, { income: number; expense: number }>,
+  );
 
   const lineData = Object.entries(dailyData)
     .sort(([a], [b]) => a.localeCompare(b))
@@ -90,16 +100,16 @@ export const Charts: React.FC = () => {
       income: Math.round(income),
       expense: Math.round(expense),
       balance: Math.round(income - expense),
-    }))
+    }));
 
   const CustomTooltip = ({
     active,
     payload,
     label,
   }: {
-    active?: boolean
-    payload?: Array<{ name: string; value: number; color: string }>
-    label?: string
+    active?: boolean;
+    payload?: Array<{ name: string; value: number; color: string }>;
+    label?: string;
   }) => {
     if (active && payload && payload.length) {
       return (
@@ -111,8 +121,14 @@ export const Charts: React.FC = () => {
         >
           <p className="font-semibold text-tg-text mb-2">{label}</p>
           {payload.map((entry, index: number) => (
-            <div key={index} className="flex items-center justify-between gap-3 text-sm">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
+            <div
+              key={index}
+              className="flex items-center justify-between gap-3 text-sm"
+            >
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: entry.color }}
+              />
               <span className="text-tg-text">{entry.name}:</span>
               <span className="font-semibold" style={{ color: entry.color }}>
                 {formatCurrency(entry.value, currency)}
@@ -120,20 +136,22 @@ export const Charts: React.FC = () => {
             </div>
           ))}
         </motion.div>
-      )
+      );
     }
-    return null
-  }
+    return null;
+  };
 
   const PieTooltip = ({
     active,
     payload,
   }: {
-    active?: boolean
-    payload?: Array<{ payload: { name: string; value: number; color: string; icon: string } }>
+    active?: boolean;
+    payload?: Array<{
+      payload: { name: string; value: number; color: string; icon: string };
+    }>;
   }) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload
+      const data = payload[0].payload;
       return (
         <motion.div
           className="glass rounded-2xl p-4 shadow-xl border border-white/20"
@@ -151,13 +169,18 @@ export const Charts: React.FC = () => {
             {formatCurrency(data.value, currency)}
           </div>
           <div className="text-xs text-tg-hint mt-1">
-            {((data.value / pieData.reduce((sum, item) => sum + item.value, 0)) * 100).toFixed(1)}%
+            {(
+              (data.value /
+                pieData.reduce((sum, item) => sum + item.value, 0)) *
+              100
+            ).toFixed(1)}
+            %
           </div>
         </motion.div>
-      )
+      );
     }
-    return null
-  }
+    return null;
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -167,12 +190,12 @@ export const Charts: React.FC = () => {
         staggerChildren: 0.2,
       },
     },
-  }
+  };
 
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
-  }
+  };
 
   if (pieData.length === 0 && lineData.length === 0) {
     return (
@@ -191,17 +214,21 @@ export const Charts: React.FC = () => {
             transition={{
               duration: 3,
               repeat: Infinity,
-              ease: 'easeInOut',
+              ease: "easeInOut",
             }}
             className="w-24 h-24 mx-auto mb-6 rounded-3xl glass flex items-center justify-center"
           >
             <BarChart3 size={40} className="text-tg-hint/50" />
           </motion.div>
-          <h3 className="text-xl font-semibold text-tg-text mb-2">Недостаточно данных</h3>
-          <p className="text-tg-hint">Добавьте транзакции для просмотра аналитики</p>
+          <h3 className="text-xl font-semibold text-tg-text mb-2">
+            Недостаточно данных
+          </h3>
+          <p className="text-tg-hint">
+            Добавьте транзакции для просмотра аналитики
+          </p>
         </Card>
       </motion.div>
-    )
+    );
   }
 
   return (
@@ -223,7 +250,9 @@ export const Charts: React.FC = () => {
                 <PieChartIcon size={24} className="text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-tg-text">Расходы по категориям</h3>
+                <h3 className="text-xl font-semibold text-tg-text">
+                  Расходы по категориям
+                </h3>
                 <p className="text-sm text-tg-hint/70">Топ-8 категорий трат</p>
               </div>
             </div>
@@ -231,40 +260,52 @@ export const Charts: React.FC = () => {
             {/* Chart */}
             <div className="w-full" style={{ minHeight: 350 }}>
               <ResponsiveContainer width="100%" height={350}>
-              <PieChart>
-                <defs>
-                  {pieData.map((entry, index) => (
-                    <linearGradient
-                      key={`gradient-${index}`}
-                      id={`gradient-${index}`}
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="100%"
-                    >
-                      <stop offset="0%" stopColor={entry.color} stopOpacity={0.8} />
-                      <stop offset="100%" stopColor={entry.color} stopOpacity={0.6} />
-                    </linearGradient>
-                  ))}
-                </defs>
-                <Pie
-                  data={pieData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={120}
-                  paddingAngle={2}
-                  strokeWidth={0}
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={`url(#gradient-${index})`} stroke="none" />
-                  ))}
-                </Pie>
-                <Tooltip content={<PieTooltip />} />
-              </PieChart>
-            </ResponsiveContainer>
+                <PieChart>
+                  <defs>
+                    {pieData.map((entry, index) => (
+                      <linearGradient
+                        key={`gradient-${index}`}
+                        id={`gradient-${index}`}
+                        x1="0%"
+                        y1="0%"
+                        x2="100%"
+                        y2="100%"
+                      >
+                        <stop
+                          offset="0%"
+                          stopColor={entry.color}
+                          stopOpacity={0.8}
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor={entry.color}
+                          stopOpacity={0.6}
+                        />
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <Pie
+                    data={pieData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={120}
+                    paddingAngle={2}
+                    strokeWidth={0}
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={`url(#gradient-${index})`}
+                        stroke="none"
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<PieTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
 
             {/* Legend */}
@@ -283,7 +324,9 @@ export const Charts: React.FC = () => {
                     style={{ backgroundColor: item.color }}
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-tg-text truncate">{item.name}</div>
+                    <div className="text-sm font-medium text-tg-text truncate">
+                      {item.name}
+                    </div>
                     <div className="text-xs text-tg-hint">
                       {formatCurrency(item.value, currency)}
                     </div>
@@ -305,7 +348,9 @@ export const Charts: React.FC = () => {
                 <TrendingUp size={24} className="text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-tg-text">Динамика баланса</h3>
+                <h3 className="text-xl font-semibold text-tg-text">
+                  Динамика баланса
+                </h3>
                 <p className="text-sm text-tg-hint/70">Последние 30 дней</p>
               </div>
             </div>
@@ -313,95 +358,135 @@ export const Charts: React.FC = () => {
             {/* Chart */}
             <div className="w-full" style={{ minHeight: 300 }}>
               <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={lineData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-                <defs>
-                  <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
+                <LineChart
+                  data={lineData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+                >
+                  <defs>
+                    <linearGradient
+                      id="incomeGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient
+                      id="expenseGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient
+                      id="balanceGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
 
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="rgba(255,255,255,0.08)"
-                  horizontal={true}
-                  vertical={false}
-                />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="rgba(255,255,255,0.08)"
+                    horizontal={true}
+                    vertical={false}
+                  />
 
-                <XAxis
-                  dataKey="date"
-                  stroke="var(--tg-theme-hint-color)"
-                  fontSize={11}
-                  angle={-45}
-                  textAnchor="end"
-                  height={80}
-                  tick={{ fill: 'var(--tg-theme-hint-color)' }}
-                />
+                  <XAxis
+                    dataKey="date"
+                    stroke="var(--tg-theme-hint-color)"
+                    fontSize={11}
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                    tick={{ fill: "var(--tg-theme-hint-color)" }}
+                  />
 
-                <YAxis
-                  stroke="var(--tg-theme-hint-color)"
-                  fontSize={11}
-                  tickFormatter={(value) =>
-                    `${Math.abs(value) >= 1000 ? `${(value / 1000).toFixed(0)}k` : value}`
-                  }
-                  tick={{ fill: 'var(--tg-theme-hint-color)' }}
-                />
+                  <YAxis
+                    stroke="var(--tg-theme-hint-color)"
+                    fontSize={11}
+                    tickFormatter={(value) =>
+                      `${
+                        Math.abs(value) >= 1000
+                          ? `${(value / 1000).toFixed(0)}k`
+                          : value
+                      }`
+                    }
+                    tick={{ fill: "var(--tg-theme-hint-color)" }}
+                  />
 
-                <Tooltip content={<CustomTooltip />} />
+                  <Tooltip content={<CustomTooltip />} />
 
-                <Line
-                  type="monotone"
-                  dataKey="income"
-                  stroke="#22c55e"
-                  name="Доход"
-                  strokeWidth={3}
-                  dot={{ fill: '#22c55e', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: '#22c55e', strokeWidth: 2, fill: '#ffffff' }}
-                  fillOpacity={1}
-                  fill="url(#incomeGradient)"
-                />
+                  <Line
+                    type="monotone"
+                    dataKey="income"
+                    stroke="#22c55e"
+                    name="Доход"
+                    strokeWidth={3}
+                    dot={{ fill: "#22c55e", strokeWidth: 2, r: 4 }}
+                    activeDot={{
+                      r: 6,
+                      stroke: "#22c55e",
+                      strokeWidth: 2,
+                      fill: "#ffffff",
+                    }}
+                    fillOpacity={1}
+                    fill="url(#incomeGradient)"
+                  />
 
-                <Line
-                  type="monotone"
-                  dataKey="expense"
-                  stroke="#ef4444"
-                  name="Расход"
-                  strokeWidth={3}
-                  dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: '#ef4444', strokeWidth: 2, fill: '#ffffff' }}
-                  fillOpacity={1}
-                  fill="url(#expenseGradient)"
-                />
+                  <Line
+                    type="monotone"
+                    dataKey="expense"
+                    stroke="#ef4444"
+                    name="Расход"
+                    strokeWidth={3}
+                    dot={{ fill: "#ef4444", strokeWidth: 2, r: 4 }}
+                    activeDot={{
+                      r: 6,
+                      stroke: "#ef4444",
+                      strokeWidth: 2,
+                      fill: "#ffffff",
+                    }}
+                    fillOpacity={1}
+                    fill="url(#expenseGradient)"
+                  />
 
-                <Line
-                  type="monotone"
-                  dataKey="balance"
-                  stroke="#3b82f6"
-                  name="Баланс"
-                  strokeWidth={3}
-                  dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2, fill: '#ffffff' }}
-                  fillOpacity={1}
-                  fill="url(#balanceGradient)"
-                />
-              </LineChart>
-            </ResponsiveContainer>
+                  <Line
+                    type="monotone"
+                    dataKey="balance"
+                    stroke="#3b82f6"
+                    name="Баланс"
+                    strokeWidth={3}
+                    dot={{ fill: "#3b82f6", strokeWidth: 2, r: 4 }}
+                    activeDot={{
+                      r: 6,
+                      stroke: "#3b82f6",
+                      strokeWidth: 2,
+                      fill: "#ffffff",
+                    }}
+                    fillOpacity={1}
+                    fill="url(#balanceGradient)"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
 
             {/* Legend */}
             <div className="flex justify-center gap-6 mt-4">
               {[
-                { key: 'income', color: '#22c55e', name: 'Доход' },
-                { key: 'expense', color: '#ef4444', name: 'Расход' },
-                { key: 'balance', color: '#3b82f6', name: 'Баланс' },
+                { key: "income", color: "#22c55e", name: "Доход" },
+                { key: "expense", color: "#ef4444", name: "Расход" },
+                { key: "balance", color: "#3b82f6", name: "Баланс" },
               ].map((item, index) => (
                 <motion.div
                   key={item.key}
@@ -410,8 +495,13 @@ export const Charts: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 + index * 0.1 }}
                 >
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                  <span className="text-sm text-tg-text font-medium">{item.name}</span>
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <span className="text-sm text-tg-text font-medium">
+                    {item.name}
+                  </span>
                 </motion.div>
               ))}
             </div>
@@ -419,5 +509,5 @@ export const Charts: React.FC = () => {
         </motion.div>
       )}
     </motion.div>
-  )
-}
+  );
+};
