@@ -7,6 +7,15 @@ import { CategoryIcon } from './CategoryIcon'
 import { TransactionCard } from './Card'
 import telegramAPI from '../telegram/telegram'
 
+const transactionNoun = (count: number): string => {
+  const lastTwo = count % 100
+  if (lastTwo >= 11 && lastTwo <= 14) return 'операций'
+  const last = count % 10
+  if (last === 1) return 'операция'
+  if (last >= 2 && last <= 4) return 'операции'
+  return 'операций'
+}
+
 export const TransactionList: React.FC = () => {
   const { filteredTransactions, removeTransaction, categories, settings, activeFilters } =
     useFinanceStore()
@@ -138,7 +147,7 @@ export const TransactionList: React.FC = () => {
             <span className="text-tg-text font-medium">Фильтр:</span>
             <span className="text-tg-hint">{filterDescription}</span>
             <div className="ml-auto text-primary-400 font-semibold">
-              {transactions.length} операц{transactions.length === 1 ? 'ия' : 'ий'}
+              {transactions.length} {transactionNoun(transactions.length)}
             </div>
           </div>
         </motion.div>
@@ -158,7 +167,7 @@ export const TransactionList: React.FC = () => {
               </div>
               <div className="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent" />
               <div className="text-xs text-tg-hint/60 bg-white/5 px-3 py-1 rounded-full">
-                {dayTransactions.length} операц{dayTransactions.length === 1 ? 'ия' : 'ий'}
+                {dayTransactions.length} {transactionNoun(dayTransactions.length)}
               </div>
             </div>
 
