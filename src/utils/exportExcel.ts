@@ -12,26 +12,21 @@ export function exportToXlsx(
   const categoryMap = new Map(categories.map((cat) => [cat.id, cat]))
 
   // Transform transactions to export format
-  const exportData = transactions.map((tx) => {
-    const category = categoryMap.get(tx.categoryId)
-    return {
-      Дата: formatDate(tx.date),
-      Тип: tx.type === 'income' ? 'Доход' : 'Расход',
-      Категория: category?.name || 'Без категории',
-      Сумма: tx.amount,
-      Валюта: currency,
-      'Форматированная сумма': formatCurrency(tx.amount, currency),
-      Комментарий: tx.note || '',
-      Создано: new Date(tx.createdAt).toLocaleString('ru-RU'),
-    }
-  })
-
-  // Sort by date descending
-  exportData.sort((a, b) => {
-    const dateA = new Date(transactions.find((t) => formatDate(t.date) === a['Дата'])?.date || 0)
-    const dateB = new Date(transactions.find((t) => formatDate(t.date) === b['Дата'])?.date || 0)
-    return dateB.getTime() - dateA.getTime()
-  })
+  const exportData = [...transactions]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .map((tx) => {
+      const category = categoryMap.get(tx.categoryId)
+      return {
+        Дата: formatDate(tx.date),
+        Тип: tx.type === 'income' ? 'Доход' : 'Расход',
+        Категория: category?.name || 'Без категории',
+        Сумма: tx.amount,
+        Валюта: currency,
+        'Форматированная сумма': formatCurrency(tx.amount, currency),
+        Комментарий: tx.note || '',
+        Создано: new Date(tx.createdAt).toLocaleString('ru-RU'),
+      }
+    })
 
   // Create workbook
   const ws = XLSX.utils.json_to_sheet(exportData)
