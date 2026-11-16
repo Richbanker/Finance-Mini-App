@@ -75,8 +75,8 @@ export function getWeekStartEnd(date: Date = new Date()): { start: string; end: 
   const day = date.getDay()
   const diff = date.getDate() - day + (day === 0 ? -6 : 1) // Adjust for Monday start
 
-  const start = new Date(date.setDate(diff))
-  const end = new Date(date.setDate(diff + 6))
+  const start = new Date(date.getFullYear(), date.getMonth(), diff)
+  const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6)
 
   return {
     start: start.toISOString().split('T')[0],
