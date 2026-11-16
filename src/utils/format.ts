@@ -48,7 +48,7 @@ export function parseAmount(value: string): number {
   // Replace comma with dot for decimal separator
   const normalized = value.replace(',', '.').replace(/[^\d.-]/g, '')
   const parsed = parseFloat(normalized)
-  return isNaN(parsed) ? 0 : parsed
+  return Number.isFinite(parsed) ? parsed : 0
 }
 
 export function getDateRangeLabel(from?: string, to?: string): string {
