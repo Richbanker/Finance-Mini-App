@@ -15,18 +15,18 @@ export function exportToXlsx(
   const exportData = [...transactions]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .map((tx) => {
-    const category = categoryMap.get(tx.categoryId)
-    return {
-      Дата: formatDate(tx.date),
-      Тип: tx.type === 'income' ? 'Доход' : 'Расход',
-      Категория: category?.name || 'Без категории',
-      Сумма: tx.amount,
-      Валюта: currency,
-      'Форматированная сумма': formatCurrency(tx.amount, currency),
-      Комментарий: tx.note || '',
-      Создано: new Date(tx.createdAt).toLocaleString('ru-RU'),
-    }
-  })
+      const category = categoryMap.get(tx.categoryId)
+      return {
+        Дата: formatDate(tx.date),
+        Тип: tx.type === 'income' ? 'Доход' : 'Расход',
+        Категория: category?.name || 'Без категории',
+        Сумма: tx.amount,
+        Валюта: currency,
+        'Форматированная сумма': formatCurrency(tx.amount, currency),
+        Комментарий: tx.note || '',
+        Создано: new Date(tx.createdAt).toLocaleString('ru-RU'),
+      }
+    })
 
   // Create workbook
   const ws = XLSX.utils.json_to_sheet(exportData)
