@@ -79,8 +79,11 @@ export function getWeekStartEnd(date: Date = new Date()): { start: string; end: 
   const start = new Date(date.getFullYear(), date.getMonth(), diff)
   const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6)
 
+  const formatLocalDate = (value: Date) =>
+    `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`
+
   return {
-    start: start.toISOString().split('T')[0],
-    end: end.toISOString().split('T')[0],
+    start: formatLocalDate(start),
+    end: formatLocalDate(end),
   }
 }
