@@ -68,7 +68,8 @@ export function exportToXlsx(
   XLSX.utils.book_append_sheet(wb, ws2, 'Сводка')
 
   // Generate file name with current date
-  const today = new Date().toISOString().split('T')[0]
+  const now = new Date()
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
   const fileName = `finance_${today}.xlsx`
 
   // Write and save file
