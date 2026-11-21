@@ -25,7 +25,10 @@ export const Filters: React.FC = () => {
 
   // Sync local state with global filters
   useEffect(() => {
-    if ((activeFilters.period?.from ?? '') !== dateFrom || (activeFilters.period?.to ?? '') !== dateTo) {
+    if (
+      (activeFilters.period?.from ?? '') !== dateFrom ||
+      (activeFilters.period?.to ?? '') !== dateTo
+    ) {
       setPeriodFilter(dateFrom || dateTo ? { from: dateFrom, to: dateTo } : undefined)
     }
   }, [dateFrom, dateTo, setPeriodFilter, activeFilters.period])
