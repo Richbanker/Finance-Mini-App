@@ -343,6 +343,9 @@ export const useFinanceStore = create<FinanceState>()(
         // Only seed if no transactions exist
         if (get().transactions.length > 0) return
 
+        const localDate = (value: Date) =>
+          `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`
+
         const today = new Date()
         const yesterday = new Date(today)
         yesterday.setDate(yesterday.getDate() - 1)
@@ -355,7 +358,7 @@ export const useFinanceStore = create<FinanceState>()(
             type: 'expense',
             amount: 1250,
             categoryId: 'food',
-            date: today.toISOString().split('T')[0],
+            date: localDate(today),
             note: 'Обед в кафе',
             createdAt: new Date().toISOString(),
           },
@@ -364,7 +367,7 @@ export const useFinanceStore = create<FinanceState>()(
             type: 'expense',
             amount: 500,
             categoryId: 'transport',
-            date: yesterday.toISOString().split('T')[0],
+            date: localDate(yesterday),
             note: 'Такси домой',
             createdAt: new Date(Date.now() - 86400000).toISOString(),
           },
@@ -373,7 +376,7 @@ export const useFinanceStore = create<FinanceState>()(
             type: 'expense',
             amount: 2500,
             categoryId: 'shopping',
-            date: yesterday.toISOString().split('T')[0],
+            date: localDate(yesterday),
             note: 'Покупки в магазине',
             createdAt: new Date(Date.now() - 80000000).toISOString(),
           },
@@ -382,7 +385,7 @@ export const useFinanceStore = create<FinanceState>()(
             type: 'expense',
             amount: 800,
             categoryId: 'entertainment',
-            date: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            date: localDate(new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000)),
             note: 'Кино с друзьями',
             createdAt: new Date(Date.now() - 172800000).toISOString(),
           },
@@ -391,7 +394,7 @@ export const useFinanceStore = create<FinanceState>()(
             type: 'expense',
             amount: 3500,
             categoryId: 'utilities',
-            date: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            date: localDate(new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000)),
             note: 'Коммунальные услуги',
             createdAt: new Date(Date.now() - 259200000).toISOString(),
           },
@@ -400,7 +403,7 @@ export const useFinanceStore = create<FinanceState>()(
             type: 'income',
             amount: 85000,
             categoryId: 'salary',
-            date: weekAgo.toISOString().split('T')[0],
+            date: localDate(weekAgo),
             note: 'Зарплата за ноябрь',
             createdAt: new Date(Date.now() - 604800000).toISOString(),
           },
@@ -409,7 +412,7 @@ export const useFinanceStore = create<FinanceState>()(
             type: 'income',
             amount: 15000,
             categoryId: 'freelance',
-            date: new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            date: localDate(new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000)),
             note: 'Проект по веб-дизайну',
             createdAt: new Date(Date.now() - 432000000).toISOString(),
           },
