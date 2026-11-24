@@ -8,10 +8,13 @@ export function useResizeRerender() {
     const container = containerRef.current
     if (!container) return
 
-    const resizeObserver = new ResizeObserver(() => {
-      // Trigger rerender by updating state
-      setTick((prev) => prev + 1)
-    })
+    const rerender = () => setTick((prev) => prev + 1)
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', rerender)
+      return () => window.removeEventListener('resize', rerender)
+    }
+
+    const resizeObserver = new ResizeObserver(rerender)
 
     resizeObserver.observe(container)
 
