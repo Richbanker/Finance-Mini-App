@@ -254,13 +254,7 @@ export const TransactionList: React.FC = () => {
                         </div>
 
                         {/* Delete Button */}
-                        <motion.div
-                          className="mt-4 flex justify-end"
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 0, y: 10 }}
-                          whileHover={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
+                        <div className="mt-4 flex justify-end">
                           <motion.button
                             onClick={() => handleDelete(transaction.id)}
                             className="flex items-center space-x-2 px-4 py-2 text-sm text-danger-400 
@@ -272,7 +266,7 @@ export const TransactionList: React.FC = () => {
                             <Trash2 size={14} />
                             <span>Удалить</span>
                           </motion.button>
-                        </motion.div>
+                        </div>
                       </TransactionCard>
                     </motion.div>
                   )
