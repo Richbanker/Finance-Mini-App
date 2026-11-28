@@ -22,17 +22,28 @@ interface AddTransactionSheetProps {
   onClose: () => void
 }
 
+const getLocalDate = (): string => {
+  const now = new Date()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${now.getFullYear()}-${month}-${day}`
+}
+
 export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({ open, onClose }) => {
   const { addTransaction, categories } = useFinanceStore()
 
   const [type, setType] = useState<TxType>('expense')
   const [amount, setAmount] = useState('')
   const [categoryId, setCategoryId] = useState('')
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+  const [date, setDate] = useState(getLocalDate)
   const [note, setNote] = useState('')
   const [errors, setErrors] = useState<{ amount?: string }>({})
 
   useLockBodyScroll(open)
+
+  useEffect(() => {
+    if (open) setDate(getLocalDate())
+  }, [open])
 
   // Filter categories by type
   const filteredCategories = categories.filter((cat) => cat.type === type)
@@ -98,7 +109,7 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({ open, 
     setType('expense')
     setAmount('')
     setCategoryId('')
-    setDate(new Date().toISOString().split('T')[0])
+    setDate(getLocalDate())
     setNote('')
     setErrors({})
     onClose()
