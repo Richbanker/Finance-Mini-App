@@ -62,7 +62,7 @@ export const Charts: React.FC = () => {
     .map((item) => ({
       name: item.name,
       icon: item.icon,
-      value: Math.round(item.value),
+      value: Number(item.value.toFixed(2)),
       color: item.color,
       categoryId: item.categoryId,
     }))
@@ -93,9 +93,9 @@ export const Charts: React.FC = () => {
     .slice(-30) // Last 30 days
     .map(([date, { income, expense }]) => ({
       date: formatDateShort(date),
-      income: Math.round(income),
-      expense: Math.round(expense),
-      balance: Math.round(income - expense),
+      income: Number(income.toFixed(2)),
+      expense: Number(expense.toFixed(2)),
+      balance: Number((income - expense).toFixed(2)),
     }))
 
   const CustomTooltip = ({
